@@ -37,6 +37,16 @@ def get_holidays(
         }
 
 
+def holidays_to_days(
+    holidays: HolidayReturn
+) -> SimpleHolidayReturn:
+    return {
+        dt.date()
+        for date_range in holidays
+        for dt in rrule(DAILY, dtstart=date_range[0], until=date_range[1])
+    }
+
+
 def get_public_holidays(
         state_code: str,
         year: int = NOW.year,
@@ -75,7 +85,7 @@ def get_weekend_holidays(
 
 def get_all_holidays(year: int, state_code: str) -> set:
     return {
-        *get_holidays(state_code=state_code, year=year),
+        *holidays_to_days(get_holidays(state_code=state_code, year=year)),
         *get_public_holidays(state_code=state_code, year=year),
         *get_weekend_holidays(year=year)
     }
